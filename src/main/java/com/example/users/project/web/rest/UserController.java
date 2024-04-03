@@ -4,6 +4,7 @@ import com.example.users.project.domain.Users;
 import com.example.users.project.dto.RequestDto;
 import com.example.users.project.service.UserService;
 import com.example.users.project.service.UserSpecifications;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@Log4j2
 public class UserController {
 
     private final UserService userService;
@@ -32,6 +34,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity creatUser(Users users) {
+        log.debug("Creating new user from {}", users);
         if (!checkPasswordLength(users.getPassword())) {
             return new ResponseEntity("Password length is less than 4", HttpStatus.BAD_REQUEST);
         }
@@ -48,36 +51,44 @@ public class UserController {
 
     @RequestMapping("/users")
     public ResponseEntity create(@RequestBody Users user) {
+        log.debug("Creating new user from {}", user);
         Users user1 = userService.save(user);
         return ResponseEntity.ok(user1);
     }
 
     @PutMapping("/users")
     public ResponseEntity update(@RequestBody Users user) {
+        log.debug("Update user" + user);
+
         Users user1 = userService.save(user);
         return ResponseEntity.ok(user1);
     }
 
     @DeleteMapping("/users")
     public ResponseEntity delete(@PathVariable Long id) {
+        log.debug("delete user by id");
         userService.delete(id);
         return ResponseEntity.ok("User deleted successfully ");
     }
 
     @GetMapping("/users")
     public ResponseEntity getAll() {
+        log.debug("Get a list of users");
         List<Users> usersList = userService.findAll();
         return ResponseEntity.ok(usersList);
     }
 
     @PostMapping("/users/search")
     public List<Users> getUsers(@RequestBody RequestDto requestDto) {
+        log.debug("Get a search by user");
         Specification<Users> usersList = usersUserSpecifications.getSearchSpecification(requestDto.getSearchRequestDto());
         return userService.findAll(usersList);
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity getById(@PathVariable Long id) {
+        log.debug("Get by id "+ id);
+
         Users usersList = userService.getUserById(id);
         return ResponseEntity.ok(usersList);
     }
